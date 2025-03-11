@@ -1,0 +1,46 @@
+name: Docker Image [aarlt/elcaro:develop]
+
+on:
+  push:
+    branches: [ develop ]
+
+env:
+  IMAGE_NAME: elcaro
+
+jobs:
+  build:
+    env:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name : Dependencies
+        run: |
+          sudo apt update
+          sudo apt install nodejs npm
+          npm config set prefix ~/.local
+          npm install -g truffle
+
+      - name: Build image
+        run: |
+          PATH="${HOME}/.local/bin:$PATH" node/elcaro --build-only
+
+      - name: Push image
+        run: |
+          IMAGE_ID=aarlt/$IMAGE_NAME
+          VERSION=develop
+
+          echo IMAGE_ID=$IMAGE_NAME
+          echo VERSION=$VERSION
+
+          echo ${DOCKERHUB_TOKEN} | docker login -u ${GITHUB_ACTOR} --password-stdin
+
+          docker tag elcaro:local $IMAGE_ID:$VERSION
+
+          docker push $IMAGE_ID:$VERSION
+
+          docker logout
