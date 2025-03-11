@@ -139,7 +139,7 @@ docker run --rm -it aarlt/elcaro:develop
 The private key of the node will be derived from the username-password pair that you will enter. That means, if you use a weak username-password pair someone else may have control over the node.
 
 ```text
-$ docker run --rm -it aarlt/elcaro:develop
+$ docker run --rm -it nerdnomerch/elcaro:main
 
                           .__
                      ____ |  |   ____ _____ _______  ____
