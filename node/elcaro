@@ -1,0 +1,31 @@
+#!/bin/bash
+
+NODE_ROOT=$(cd $(dirname "$0}") && pwd)
+
+function build() {
+    cd ${NODE_ROOT}/../truffle
+    truffle compile
+    mkdir -p ${NODE_ROOT}/contracts
+    cp ${NODE_ROOT}/../truffle/build/contracts/* ${NODE_ROOT}/contracts/
+
+    cd ${NODE_ROOT}
+    docker build -t elcaro:local .
+}
+
+if [ ! -f ${NODE_ROOT}/Dockerfile.sha256 ] ; then
+    build
+else 
+    sha256sum -c Dockerfile.sha256 > /dev/null
+    if [ ! $? -eq 0 ]; then
+	build
+    fi
+fi
+
+sha256sum ${NODE_ROOT}/Dockerfile ${NODE_ROOT}/src/main.py ${NODE_ROOT}/src/executor.py ${NODE_ROOT}/src/exec_prelude.py ${NODE_ROOT}/src/exec_epilogue.py ${NODE_ROOT}/src/requirements.txt ${NODE_ROOT}/contracts/* ${NODE_ROOT}/init/* > Dockerfile.sha256
+
+if [ "$1" == "--build-only" ]; then
+    exit 0
+fi
+
+docker run --rm -it -v ${NODE_ROOT}/data:/data elcaro:local $@
+# docker run --rm -it elcaro:local $@
