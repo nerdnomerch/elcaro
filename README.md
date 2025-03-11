@@ -131,7 +131,7 @@ So in our case after executing the contract method `query_price(..)` the defined
 A simple docker image was prepared that contains `ipfs` and `geth`. `geth` is preconfigured to use the goerli testnet as a light client. Additionally a simple text-based ui can be used to manage the elcaro node.
 
 ```docker
-docker run --rm -it aarlt/elcaro:develop
+docker run --rm -it nerdnomerch/elcaro:main
 ```
 
 #### Login
